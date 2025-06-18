@@ -1,4 +1,7 @@
 .vscode
+temp/
+out/
+aligned_pictures
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
