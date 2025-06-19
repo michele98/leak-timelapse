@@ -45,7 +45,7 @@ def main():
         for filename in IMAGE_LIST:
             shutil.copy(os.path.join(PICTURES_FOLDER, filename), os.path.join(input_folder, filename))
 
-        align_all_images(input_folder, ALIGNED_PICTURES_FOLDER, overlay_timestamps=True)
+        align_all_images(input_folder, ALIGNED_PICTURES_FOLDER, overlay_timestamps=True, equalize_histogram=True)
 
     FRAMES_FOLDER = os.path.join(WORKDIR, "video_frames")
     os.makedirs(FRAMES_FOLDER, exist_ok=True)

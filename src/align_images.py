@@ -3,6 +3,7 @@ import cv2
 import time
 import numpy as np
 
+from src.color import histogram_equalization_color
 from src.tag_image import write_text_on_image, get_overlay_text
 
 
@@ -83,8 +84,7 @@ def apply_homography(image: np.ndarray, homography: np.ndarray):
     return cv2.warpPerspective(image, homography, (width, height))
 
 
-
-def align_all_images(input_folder: str, output_folder: str, reference_image_name: str = None, overlay_timestamps: bool = False):
+def align_all_images(input_folder: str, output_folder: str, reference_image_name: str = None, overlay_timestamps: bool = False, equalize_histogram: bool = False):
     os.makedirs(output_folder, exist_ok=True)
     if overlay_timestamps:
         os.makedirs(os.path.join(output_folder, "with_timestamps"), exist_ok=True)
@@ -108,12 +108,16 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
 
     # save reference image and aligned images to output folder
     cropped_reference_image = reference_image[:CROP_PRE, -CROP_PRE:]
-    cv2.imwrite(os.path.join(output_folder, reference_image_name), cropped_reference_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST])
+
+    image_to_save = cropped_reference_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST]
+    if equalize_histogram:
+        image_to_save = histogram_equalization_color(image_to_save)
+
+    cv2.imwrite(os.path.join(output_folder, reference_image_name), image_to_save)
     if overlay_timestamps:
-        output_path_with_timestamp = os.path.join(output_folder, "with_timestamps", reference_image_name)
         text = get_overlay_text(reference_image_name)
-        tagged_image = write_text_on_image(cropped_reference_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST], text)
-        cv2.imwrite(output_path_with_timestamp, tagged_image)
+        tagged_image = write_text_on_image(image_to_save, text)
+        cv2.imwrite(os.path.join(output_folder, "with_timestamps", reference_image_name), tagged_image)
 
     t0 = time.time()
     # compute keypoints and descriptors in reference
@@ -125,14 +129,15 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
         kp_target, des_target = compute_sift(cropped_image)
         homography = compute_homography(kp_ref, des_ref, kp_target, des_target)
         aligned_image = apply_homography(cropped_image, homography)
-        # aligned_image = align_images(cropped_reference_image, image[:VERTICAL_CROP_PRE])
 
-        output_path = os.path.join(output_folder, image_name)
-        cv2.imwrite(output_path, aligned_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST])
+        image_to_save = aligned_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST]
+        if equalize_histogram:
+            image_to_save = histogram_equalization_color(image_to_save)
+
+        cv2.imwrite(os.path.join(output_folder, image_name), image_to_save)
         if overlay_timestamps:
-            output_path_with_timestamp = os.path.join(output_folder, "with_timestamps", image_name)
             text = get_overlay_text(image_name)
-            tagged_image = write_text_on_image(aligned_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST], text)
-            cv2.imwrite(output_path_with_timestamp, tagged_image)
+            tagged_image = write_text_on_image(image_to_save, text)
+            cv2.imwrite(os.path.join(output_folder, "with_timestamps", image_name), tagged_image)
     t1 = time.time()
     print(f"Done in {t1-t0:.3g} s.")
