@@ -25,9 +25,9 @@ def write_text_on_image(
         position: Tuple[int] = (100, 200),
         font_scale: int = 6,
         color: Tuple[int] = (255, 255, 255),
-        thickness: int = 8,
+        thickness: int = 12,
         outline_color: Tuple[int] = (0, 0, 0),
-        outline_thickness: int = 1,
+        outline_thickness: int = 5,
         line_spacing: int = 10
         ) -> np.ndarray:
     """
@@ -44,7 +44,6 @@ def write_text_on_image(
         outline_color (tuple): Color of the outline in BGR format. Default is black (0, 0, 0).
         outline_thickness (int): Thickness of the outline. Default is 1.
         line_spacing (int): Additional spacing between lines. Default is 10.
-
     """
     # Load the image
     image = image.copy()
@@ -52,7 +51,7 @@ def write_text_on_image(
     x, y = position
     font = cv2.FONT_HERSHEY_SIMPLEX
     for line in text.splitlines():
-        cv2.putText(image, line, (x, y), font, font_scale, outline_color, outline_thickness)
+        cv2.putText(image, line, (x, y), font, font_scale, outline_color, outline_thickness+thickness)
         cv2.putText(image, line, (x, y), font, font_scale, color, thickness)
 
         # Move to the next line

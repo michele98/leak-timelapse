@@ -64,7 +64,7 @@ def concatenate_pictures(input_folder: str, output_path: str, fps: int = 10, wor
             command += ["-vf", f"scale={size}:-1"]
 
         command += [
-            "-crf", "23",
+            "-crf", "27",
             output_path  # Output video file
         ]
 
