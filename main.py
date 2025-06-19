@@ -13,7 +13,8 @@ FRAMES_LIST_VIDEO = [
     "20250615_222355.jpg",
     "20250616_195033.jpg",
     "20250617_193733.jpg",
-    "20250618_184236.jpg"
+    "20250618_184236.jpg",
+    "20250619_194322.jpg"
 ] # Subset of frames used for video creation
 
 
