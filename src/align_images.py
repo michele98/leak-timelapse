@@ -3,6 +3,8 @@ import cv2
 import time
 import numpy as np
 
+from src.tag_image import write_text_on_image, get_overlay_text
+
 
 def align_images(image1: np.ndarray, image2: np.ndarray) -> np.ndarray:
     """
@@ -82,7 +84,11 @@ def apply_homography(image: np.ndarray, homography: np.ndarray):
 
 
 
-def align_all_images(input_folder: str, output_folder: str, reference_image_name: str = None):
+def align_all_images(input_folder: str, output_folder: str, reference_image_name: str = None, overlay_timestamps: bool = False):
+    os.makedirs(output_folder, exist_ok=True)
+    if overlay_timestamps:
+        os.makedirs(os.path.join(output_folder, "with_timestamps"), exist_ok=True)
+
     image_names = sorted(os.listdir(input_folder))
 
     if reference_image_name is None:
@@ -103,6 +109,11 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
     # save reference image and aligned images to output folder
     cropped_reference_image = reference_image[:CROP_PRE, -CROP_PRE:]
     cv2.imwrite(os.path.join(output_folder, reference_image_name), cropped_reference_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST])
+    if overlay_timestamps:
+        output_path_with_timestamp = os.path.join(output_folder, "with_timestamps", reference_image_name)
+        text = get_overlay_text(reference_image_name)
+        tagged_image = write_text_on_image(cropped_reference_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST], text)
+        cv2.imwrite(output_path_with_timestamp, tagged_image)
 
     t0 = time.time()
     # compute keypoints and descriptors in reference
@@ -118,5 +129,10 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
 
         output_path = os.path.join(output_folder, image_name)
         cv2.imwrite(output_path, aligned_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST])
+        if overlay_timestamps:
+            output_path_with_timestamp = os.path.join(output_folder, "with_timestamps", image_name)
+            text = get_overlay_text(image_name)
+            tagged_image = write_text_on_image(aligned_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST], text)
+            cv2.imwrite(output_path_with_timestamp, tagged_image)
     t1 = time.time()
     print(f"Done in {t1-t0:.3g} s.")

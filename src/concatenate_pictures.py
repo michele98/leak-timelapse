@@ -29,7 +29,7 @@ def concatenate_pictures(input_folder: str, output_path: str, fps: int = 10, wor
         workdir = os.path.join(workdir, "frames")
         os.makedirs(workdir, exist_ok=True)
 
-    for filename in os.listdir(input_folder):
+    for filename in [name for name in os.listdir(input_folder) if name.lower().endswith(('.jpg', '.jpeg', '.png'))]:
         for i in range(frame_multiplier):
             if loop:
                 target_filename = f"{i:04d}_" + filename
@@ -37,15 +37,10 @@ def concatenate_pictures(input_folder: str, output_path: str, fps: int = 10, wor
                 target_filename = filename.split(".")[-2] + f"_{i:04d}." + filename.split(".")[-1]
             shutil.copy(os.path.join(input_folder, filename), os.path.join(workdir, target_filename))
 
-    # Get a sorted list of image files in the input folder
-    image_files = sorted(
-        [f for f in os.listdir(workdir) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
-    )
-
     # Create a temporary file to store the list of images
     file_list_path = os.path.join(workdir, "file_list.txt")
     with open(file_list_path, "w") as f:
-        for image_file in image_files:
+        for image_file in sorted(name for name in os.listdir(workdir) if name!="file_list.txt"):
             f.write(f"file '{os.path.join(workdir, image_file)}'\n")
 
     # Create the output directory if it does not exist

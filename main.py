@@ -14,6 +14,8 @@ FRAMES_LIST = [
     "20250618_184236.jpg"
 ]
 
+# FRAMES_LIST = sorted(os.listdir("pictures"))[2:]
+
 
 if __name__ == "__main__":
     # Create ALIGNED_PICTURES_FOLDER
@@ -30,7 +32,7 @@ if __name__ == "__main__":
     if not os.path.exists(ALIGNED_PICTURES_FOLDER):
         os.makedirs(ALIGNED_PICTURES_FOLDER)
 
-    if sorted(os.listdir(ALIGNED_PICTURES_FOLDER)) != sorted(FRAMES_LIST):
+    if sorted([name for name in os.listdir(ALIGNED_PICTURES_FOLDER) if name.lower().endswith(('.jpg', '.jpeg', '.png'))]) != sorted(FRAMES_LIST):
         shutil.rmtree(ALIGNED_PICTURES_FOLDER)
         os.makedirs(ALIGNED_PICTURES_FOLDER)
 
@@ -42,7 +44,7 @@ if __name__ == "__main__":
         for filename in FRAMES_LIST:
             shutil.copy(os.path.join(PICTURES_FOLDER, filename), os.path.join(input_folder, filename))
 
-        align_all_images(input_folder, ALIGNED_PICTURES_FOLDER)
+        align_all_images(input_folder, ALIGNED_PICTURES_FOLDER, overlay_timestamps=True)
 
 
     output_path = os.path.abspath("out/perdita_loop.mp4")
@@ -50,9 +52,9 @@ if __name__ == "__main__":
     print(f"Video created successfully at {output_path}")
 
     output_path = os.path.abspath("out/perdita.mp4")
-    concatenate_pictures(ALIGNED_PICTURES_FOLDER, output_path, fps=25, frame_multiplier=5, loop=False, size=1024)
+    concatenate_pictures(os.path.join(ALIGNED_PICTURES_FOLDER, "with_timestamps"), output_path, fps=25, frame_multiplier=5, loop=False, size=1024)
     print(f"Video created successfully at {output_path}")
 
     output_path = os.path.abspath("out/perdita.gif")
-    concatenate_pictures_gif(ALIGNED_PICTURES_FOLDER, output_path, fps=3, resize=1024, last_delay_multiplier=2)
+    concatenate_pictures_gif(os.path.join(ALIGNED_PICTURES_FOLDER, "with_timestamps"), output_path, fps=3, resize=1024, last_delay_multiplier=2)
     print(f"GIF created successfully at {output_path}")

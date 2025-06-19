@@ -1,2 +1,2 @@
 from src.concatenate_pictures import concatenate_pictures, concatenate_pictures_gif
-from src.image_align import align_all_images
+from src.align_images import align_all_images
