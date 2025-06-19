@@ -101,8 +101,7 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
     CROP_POST = 200
 
     # save reference image and aligned images to output folder
-    # cropped_reference_image = reference_image[:CROP_PRE, -CROP_PRE:]
-    cropped_reference_image = reference_image[:CROP_PRE]
+    cropped_reference_image = reference_image[:CROP_PRE, -CROP_PRE:]
     cv2.imwrite(os.path.join(output_folder, reference_image_name), cropped_reference_image[CROP_POST:-CROP_POST, CROP_POST:-CROP_POST])
 
     t0 = time.time()
@@ -111,8 +110,7 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
     kp_ref, des_ref = compute_sift(cropped_reference_image)
     for i, (image, image_name) in enumerate(zip(images, image_names)):
         print(f"{i+1} of {len(images)}")
-        # cropped_image = image[:CROP_PRE, -CROP_PRE:]
-        cropped_image = image[:CROP_PRE]
+        cropped_image = image[:CROP_PRE, -CROP_PRE:]
         kp_target, des_target = compute_sift(cropped_image)
         homography = compute_homography(kp_ref, des_ref, kp_target, des_target)
         aligned_image = apply_homography(cropped_image, homography)

@@ -21,7 +21,7 @@ if __name__ == "__main__":
     PICTURES_FOLDER = os.path.abspath("pictures")
     ALIGNED_PICTURES_FOLDER = os.path.abspath("aligned_pictures")
 
-    WORKDIR = os.path.abspath("temp")
+    WORKDIR = os.path.abspath("temp/main")
     if os.path.exists(WORKDIR):
         shutil.rmtree(WORKDIR)
     os.makedirs(WORKDIR)
@@ -45,8 +45,12 @@ if __name__ == "__main__":
         align_all_images(input_folder, ALIGNED_PICTURES_FOLDER)
 
 
+    output_path = os.path.abspath("out/perdita_loop.mp4")
+    concatenate_pictures(ALIGNED_PICTURES_FOLDER, output_path, fps=25, frame_multiplier=20, loop=True, size=1024)
+    print(f"Video created successfully at {output_path}")
+
     output_path = os.path.abspath("out/perdita.mp4")
-    concatenate_pictures(ALIGNED_PICTURES_FOLDER, output_path, fps=7)
+    concatenate_pictures(ALIGNED_PICTURES_FOLDER, output_path, fps=25, frame_multiplier=5, loop=False, size=1024)
     print(f"Video created successfully at {output_path}")
 
     output_path = os.path.abspath("out/perdita.gif")
