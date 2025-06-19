@@ -84,7 +84,7 @@ def apply_homography(image: np.ndarray, homography: np.ndarray):
     return cv2.warpPerspective(image, homography, (width, height))
 
 
-def align_all_images(input_folder: str, output_folder: str, reference_image_name: str = None, overlay_timestamps: bool = False, equalize_histogram: bool = False):
+def align_all_images(input_folder: str, output_folder: str, reference_image_name: str = None, overlay_timestamps: bool = False, equalize_histogram: bool = False, jpeg_quality: int = 90):
     os.makedirs(output_folder, exist_ok=True)
     if overlay_timestamps:
         os.makedirs(os.path.join(output_folder, "with_timestamps"), exist_ok=True)
@@ -113,11 +113,11 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
     if equalize_histogram:
         image_to_save = histogram_equalization_color(image_to_save)
 
-    cv2.imwrite(os.path.join(output_folder, reference_image_name), image_to_save)
+    cv2.imwrite(os.path.join(output_folder, reference_image_name), image_to_save, (cv2.IMWRITE_JPEG_QUALITY, jpeg_quality))
     if overlay_timestamps:
         text = get_overlay_text(reference_image_name)
         tagged_image = write_text_on_image(image_to_save, text)
-        cv2.imwrite(os.path.join(output_folder, "with_timestamps", reference_image_name), tagged_image)
+        cv2.imwrite(os.path.join(output_folder, "with_timestamps", reference_image_name), tagged_image, (cv2.IMWRITE_JPEG_QUALITY, jpeg_quality))
 
     t0 = time.time()
     # compute keypoints and descriptors in reference
@@ -134,10 +134,10 @@ def align_all_images(input_folder: str, output_folder: str, reference_image_name
         if equalize_histogram:
             image_to_save = histogram_equalization_color(image_to_save)
 
-        cv2.imwrite(os.path.join(output_folder, image_name), image_to_save)
+        cv2.imwrite(os.path.join(output_folder, image_name), image_to_save, (cv2.IMWRITE_JPEG_QUALITY, jpeg_quality))
         if overlay_timestamps:
             text = get_overlay_text(image_name)
             tagged_image = write_text_on_image(image_to_save, text)
-            cv2.imwrite(os.path.join(output_folder, "with_timestamps", image_name), tagged_image)
+            cv2.imwrite(os.path.join(output_folder, "with_timestamps", image_name), tagged_image, (cv2.IMWRITE_JPEG_QUALITY, jpeg_quality))
     t1 = time.time()
     print(f"Done in {t1-t0:.3g} s.")
